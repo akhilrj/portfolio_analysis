@@ -5,8 +5,12 @@ import pandas_market_calendars as mcal
 from pandas.tseries.offsets import CustomBusinessDay
 import streamlit as st 
 
+left_co, cent_co,last_co = st.columns(3)
+with cent_co:
+    st.image('sokat.jpg')
+
 def color_gain_loss(val):
-    color = 'green' if val>=0 else 'red'
+    color = '#9fe2bf' if val>=0 else '#fa8072'
     return f'background-color: {color}'
 
 nyse = mcal.get_calendar('NYSE')
@@ -59,6 +63,6 @@ data = {
 df = pd.DataFrame(data)
 
 # Streamlit web app
-st.title('Stock Portfolio Week-over-Week Performance')
-st.write('All values are in percent')
-st.dataframe(df.style.applymap(color_gain_loss, subset=['Day-over-Day', 'Week-over-Week', 'Month-over-Month', 'Quarter-over-Quarter']))
+st.header('Stock Portfolio Performance', divider='blue')
+st.write('* All values are in percent')
+st.dataframe(df.style.format(precision=2).applymap(color_gain_loss, subset=['Day-over-Day', 'Week-over-Week', 'Month-over-Month', 'Quarter-over-Quarter']), hide_index=True, height=1800)
