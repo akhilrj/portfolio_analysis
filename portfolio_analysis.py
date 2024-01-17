@@ -7,7 +7,7 @@ import streamlit as st
 import hydralit_components as hc
 import time
 import hydralit as hy
-import matplotlib.pyplot as plt
+import plotly.express as px
 
 # List of 5 example stock tickers
 stocks = [
@@ -16,7 +16,7 @@ stocks = [
     'XYL', 'RKT', 'TROW', 'FWONK', 'CUK', 'EQR', 'PHM', 'ETR', 'WAB', 'CTRA', 'RF', 'NTRS', 'CMS', 'SUI', 'J', 'SNA'
 ]
 
-app = hy.HydraApp(title='Simple Multi-Page App')
+app = hy.HydraApp(title='Sokat Portfolio Analysis App')
 
 left_co, cent_co, last_co = st.columns(3)
 with cent_co:
@@ -102,33 +102,52 @@ def app2():
     st.header('Stock Portfolio Performance', divider='blue')
     st.write('* All values are in percent')
     st.write('* Inception date is 19th December 2023')
-    st.dataframe(df.style.format(precision=2).applymap(color_gain_loss,
+    st.dataframe(df.style.format(precision=2).background_gradient(cmap='RdYlGn',
                                                     subset=['Day-over-Day', 'Week-over-Week', 'Month-over-Month',
-                                                            'Quarter-over-Quarter', 'Since Inception']), hide_index=True, height=1800)
+                                                            'Quarter-over-Quarter', 'Since Inception'], axis=None), hide_index=True, height=1800)
 
-# @app.addapp(title='Portfolio vs Benchmark')
-# def app3():
-#     # Set the start date as December 19, 2023
-#     start_date = '2023-12-19'
+@app.addapp(title='Portfolio vs Benchmark')
+def app3():
+    portfolio_val = pd.read_csv('portfolio_val.csv')
+    # plt.figure(figsize=(10, 6))
 
-#     def get_stock_data(symbol, start_date):
-#         stock = yf.download(symbol, start=start_date)
-#         return stock['Adj Close']
+    # plt.plot(portfolio_val['Date'], portfolio_val['Sokat_portfolio_val'], label='Sokat Portfolio Value', marker='o')
+    # plt.plot(portfolio_val['Date'], portfolio_val['IWS_Portfolio_Val'], label='IWS Portfolio Value', marker='o')
 
-#     # Create a DataFrame to store the adjusted close prices of each stock
-#     portfolio_data = pd.DataFrame()
+    # # Formatting the axes and legends
+    # plt.title('Visualization of Portfolio Values Over Time')
+    # plt.xlabel('Date')
+    # plt.ylabel('Portfolio Value')
+    # plt.xticks(rotation=45)
+    # plt.grid(True)
+    # plt.legend()
 
-#     # Populate the DataFrame with stock data
-#     for symbol in stocks:
-#         portfolio_data[symbol] = get_stock_data(symbol, start_date)
+    # # Formatting y-axis to display dollar values
+    # plt.gca().yaxis.set_major_formatter('${x:,.0f}')
 
-#     # Plot the portfolio performance
-#     portfolio_data.plot(figsize=(12, 6))
-#     plt.title('Portfolio Performance since December 19, 2023')
-#     plt.xlabel('Date')
-#     plt.ylabel('Adjusted Close Price')
-#     plt.legend(loc='upper left')
-#     plt.grid(True)
-#     plt.show()
+    # st.pyplot(plt.gcf())
+
+    # Create a Plotly line chart
+    fig = px.line(portfolio_val, x='Date', y=['Sokat_portfolio_val', 'IWS_Portfolio_Val'],
+                labels={'value': 'Portfolio Value'},
+                title='Portfolio Values Over Time',
+                line_shape="linear",  # Choose line shape (linear, spline, hv, vh, hvh, or vhv)
+                line_dash_sequence=['solid', 'dot'],  # Set line dash sequence
+                )
+
+    # Format axes and legends
+    fig.update_layout(
+        xaxis_title='Date',
+        yaxis_title='Portfolio Value',
+        legend_title='Columns',
+        hovermode='x unified',  # Display hover information for both lines at the same time
+        xaxis=dict(
+            tickformat='%b %d, %Y',  # Format x-axis date display
+            tickmode='auto',
+            nticks=10,
+        ),
+    )
+
+    st.plotly_chart(fig, theme='streamlit')
 
 app.run()

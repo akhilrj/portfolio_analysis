@@ -19,3 +19,4 @@ astropy
 pydeck
 scipy
 matplotlib
+plotly
