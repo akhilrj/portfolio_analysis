@@ -142,7 +142,7 @@ def app3():
         legend_title='Columns',
         hovermode='x unified',  # Display hover information for both lines at the same time
         xaxis=dict(
-            tickformat='%b %d, %Y',  # Format x-axis date display
+            # tickformat='%b %d, %Y',  # Format x-axis date display
             tickmode='auto',
             nticks=10,
         ),
